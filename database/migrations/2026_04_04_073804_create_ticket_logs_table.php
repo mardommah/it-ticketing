@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('ticket_logs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('ticket_id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('action'); // status_change, assignment, category_update
+            $table->text('details')->nullable();
             $table->timestamps();
+
+            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
