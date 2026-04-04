@@ -13,6 +13,7 @@
             <div class="flex space-x-4">
                 <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-indigo-600">Dashboard</a>
                 <a href="{{ route('tickets.index') }}" class="text-gray-600 hover:text-indigo-600">Tickets</a>
+                <a href="{{ route('analytics.index') }}" class="text-gray-600 hover:text-indigo-600">Analytics</a>
             </div>
         </div>
     </nav>
