@@ -93,3 +93,25 @@ npm start
 2. Any message sent to the group will automatically create a ticket in the dashboard.
 3. Access the dashboard at `/dashboard` to recap and assign tickets.
 4. Access analytics at `/analytics` for issue reports.
+## 6. Local Setup via XAMPP/LAMPP
+
+If you prefer using XAMPP/LAMPP instead of `php artisan serve`:
+
+1. **Move Project:** Place the `it-ticketing` folder inside your `htdocs` (XAMPP) or `/var/www/html` (LAMPP) directory.
+2. **Virtual Host (Recommended):**
+   - Configure a virtual host pointing to the `/public` directory of the project.
+   - Example (Apache):
+     ```apache
+     <VirtualHost *:80>
+         DocumentRoot "C:/xampp/htdocs/it-ticketing/public"
+         ServerName it-ticketing.local
+     </VirtualHost>
+     ```
+   - Update your `hosts` file to include `127.0.0.1 it-ticketing.local`.
+3. **Database:** Create a database via phpMyAdmin and update your `.env` accordingly.
+4. **Permissions (LAMPP):** Ensure the `storage` and `bootstrap/cache` directories are writable:
+   ```bash
+   sudo chmod -R 775 storage bootstrap/cache
+   sudo chown -R www-data:www-data .
+   ```
+5. **Access:** Visit `http://it-ticketing.local` or `http://localhost/it-ticketing/public`.
