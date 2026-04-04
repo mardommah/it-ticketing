@@ -17,4 +17,13 @@ class Ticket extends Model
         'category',
         'whatsapp_timestamp',
     ];
+    public function assignee()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(TicketLog::class);
+    }
 }
