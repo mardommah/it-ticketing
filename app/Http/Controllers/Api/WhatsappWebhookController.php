@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-import App\Http\Controllers\Controller;
-import App\Models\Ticket;
-import Illuminate\Http\Request;
-import Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Models\Ticket;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WhatsappWebhookController extends Controller
 {
