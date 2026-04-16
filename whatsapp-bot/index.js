@@ -60,13 +60,33 @@ async function connectToWhatsApp() {
                     const isGroup = from.endsWith('@g.us');
                     const participant = msg.key.participant || from;
                     const pushName = msg.pushName || 'Unknown';
-                    const messageText = msg.message.conversation || 
-                                        msg.message.extendedTextMessage?.text || 
-                                        '';
+                    const messageText = msg.message.conversation ||
+                        msg.message.extendedTextMessage?.text ||
+                        '';
 
-                    if (messageText && isGroup) {
-                        console.log(`New message in group ${from} from ${pushName}: ${messageText}`);
-                        
+                    if (messageText) {
+                        if (isGroup) {
+                            // Group Filtering Logic
+                            const allowedGroups = process.env.ALLOWED_GROUPS ? process.env.ALLOWED_GROUPS.split(',').map(g => g.trim()).filter(g => g.length > 0) : [];
+                            if (allowedGroups.length > 0 && !allowedGroups.includes(from)) {
+                                console.log(`Skipping message from unauthorized group: ${from}`);
+                                continue;
+                            }
+                        }
+
+                        // Advanced Keyword Filtering Logic
+                        const keywords = ['tolong', 'minta tolong', 'lapor', '#lapor', 'kendala', 'mohon bantu', 'mohon', 'error', 'gangguan', 'lemot', 'lambat'];
+                        const regex = new RegExp(keywords.join('|'), 'i');
+                        const isProblem = regex.test(messageText);
+
+                        if (!isProblem) {
+                            console.log(`Skipping non-problem message: ${messageText}`);
+                            continue;
+                        }
+
+                        const sourceType = isGroup ? 'group' : 'private chat';
+                        console.log(`New problem detected in ${sourceType} ${from} from ${pushName}: ${messageText}`);
+
                         try {
                             // Forwarding to Laravel
                             await axios.post(`${process.env.LARAVEL_URL}/api/whatsapp/webhook`, {
