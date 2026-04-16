@@ -10,8 +10,70 @@ import qrcode from 'qrcode-terminal';
 import pino from 'pino';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import express from 'express';
+import QRCode from 'qrcode';
 
 dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+let currentQR = null;
+
+// Route to serve the QR code
+app.get('/scan', async (req, res) => {
+    if (!currentQR) {
+        return res.send('<h1>QR Code not generated yet or already connected.</h1><p>Check terminal logs for status.</p>');
+    }
+    
+    try {
+        const qrImage = await QRCode.toDataURL(currentQR);
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>WhatsApp Bot Scan</title>
+                    <meta http-equiv="refresh" content="30">
+                    <style>
+                        body { 
+                            font-family: sans-serif; 
+                            display: flex; 
+                            flex-direction: column; 
+                            align-items: center; 
+                            justify-content: center; 
+                            height: 100vh; 
+                            margin: 0;
+                            background-color: #f0f2f5;
+                        }
+                        .container {
+                            background: white;
+                            padding: 2rem;
+                            border-radius: 1rem;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                            text-align: center;
+                        }
+                        img { width: 300px; height: 300px; }
+                        h1 { color: #128c7e; }
+                        p { color: #667781; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>Scan WhatsApp Bot</h1>
+                        <p>Open WhatsApp on your phone and scan the code below</p>
+                        <img src="${qrImage}" alt="QR Code">
+                        <p>Page refreshes automatically every 30 seconds</p>
+                    </div>
+                </body>
+            </html>
+        `);
+    } catch (err) {
+        res.status(500).send('Error generating QR code');
+    }
+});
+
+app.listen(port, () => {
+    console.log(`QR Scanner web interface running at http://localhost:${port}/scan`);
+});
 
 const logger = pino({ level: 'info' });
 
@@ -35,8 +97,10 @@ async function connectToWhatsApp() {
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update;
         if (qr) {
+            currentQR = qr;
             qrcode.generate(qr, { small: true });
         }
+        
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error instanceof Boom)
                 ? lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut
@@ -46,6 +110,7 @@ async function connectToWhatsApp() {
                 connectToWhatsApp();
             }
         } else if (connection === 'open') {
+            currentQR = null; // Clear QR once connected
             console.log('opened connection');
         }
     });
