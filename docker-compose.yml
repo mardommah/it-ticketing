@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: it_ticketing_bot
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     volumes:
       # Mounting source code
       - ./whatsapp-bot:/usr/src/app
