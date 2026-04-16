@@ -74,7 +74,7 @@
                             <span class="text-sm font-bold text-gray-700 dark:text-gray-200">{{ $statusCounts[$status] ?? 0 }}</span>
                         </div>
                         <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
-                            <div class="bg-{{ $status === 'open' ? 'red' : ($status === 'resolved' ? 'green' : 'yellow') }}-500 h-2 rounded-full" style="width: {{ count($statusCounts) > 0 ? (($statusCounts[$status] ?? 0) / (array_sum($statusCounts->toArray()) ?: 1) * 100) : 0 }}%"></div>
+                            <div class="{{ $status === 'open' ? 'bg-red-500' : ($status === 'resolved' ? 'bg-green-500' : 'bg-yellow-500') }} h-2 rounded-full" style="width: {{ count($statusCounts) > 0 ? (($statusCounts[$status] ?? 0) / (array_sum($statusCounts->toArray()) ?: 1) * 100) : 0 }}%"></div>
                         </div>
                     </div>
                 @endforeach

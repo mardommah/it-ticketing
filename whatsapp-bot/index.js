@@ -74,9 +74,9 @@ async function connectToWhatsApp() {
                             }
                         }
 
-                        // Advanced Keyword Filtering Logic
+                        // Refined Keyword Filtering Logic (ensures keywords are detected accurately)
                         const keywords = ['tolong', 'minta tolong', 'lapor', '#lapor', 'kendala', 'mohon bantu', 'mohon', 'error', 'gangguan', 'lemot', 'lambat'];
-                        const regex = new RegExp(keywords.join('|'), 'i');
+                        const regex = new RegExp(keywords.map(k => k.startsWith('#') ? k : `\\b${k}\\b`).join('|'), 'i');
                         const isProblem = regex.test(messageText);
 
                         if (!isProblem) {
@@ -103,7 +103,11 @@ async function connectToWhatsApp() {
                             });
                             console.log('Successfully forwarded to Laravel');
                         } catch (error) {
-                            console.error('Error forwarding to Laravel:', error.message);
+                            console.error('Error forwarding to Laravel:', {
+                                message: error.message,
+                                status: error.response?.status,
+                                data: error.response?.data
+                            });
                         }
                     }
                 }
