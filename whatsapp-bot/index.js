@@ -21,6 +21,11 @@ let currentQR = null;
 
 // Route to serve the QR code
 app.get('/scan', async (req, res) => {
+    const token = req.query.token;
+    if (token !== process.env.SCAN_TOKEN) {
+        return res.status(401).send('<h1>Unauthorized</h1><p>Please provide a valid scan token in the URL.</p>');
+    }
+
     if (!currentQR) {
         return res.send('<h1>QR Code not generated yet or already connected.</h1><p>Check terminal logs for status.</p>');
     }

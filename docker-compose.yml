@@ -20,6 +20,7 @@ services:
     environment:
       # These allow Dokploy to override values via its UI
       - PORT=3009
+      - SCAN_TOKEN=${SCAN_TOKEN:-185794c97d0f01ed}
       - LARAVEL_URL=${LARAVEL_URL:-http://localhost:8000}
       - WEBHOOK_TOKEN=${WEBHOOK_TOKEN:-aowkowkowkow}
       - ALLOWED_GROUPS=${ALLOWED_GROUPS:-}
