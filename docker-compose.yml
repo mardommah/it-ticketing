@@ -6,7 +6,7 @@ services:
     container_name: it_ticketing_bot
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3009:3009"
     volumes:
       # Mounting source code
       - ./whatsapp-bot:/usr/src/app
@@ -19,6 +19,7 @@ services:
     #   - ./whatsapp-bot/.env
     environment:
       # These allow Dokploy to override values via its UI
+      - PORT=3009
       - LARAVEL_URL=${LARAVEL_URL:-http://localhost:8000}
       - WEBHOOK_TOKEN=${WEBHOOK_TOKEN:-aowkowkowkow}
       - ALLOWED_GROUPS=${ALLOWED_GROUPS:-}
