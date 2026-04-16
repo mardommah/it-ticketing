@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   bot:
     build:
@@ -8,11 +6,17 @@ services:
     container_name: it_ticketing_bot
     restart: unless-stopped
     volumes:
-      # Mounting source code for live updates (optional on VPS, but helpful)
+      # Mounting source code
       - ./whatsapp-bot:/usr/src/app
-      # Bind mounting auth data to a local directory for persistence and easy access
+      # Bind mounting auth data for persistence
       - ./whatsapp-bot/auth_info_baileys:/usr/src/app/auth_info_baileys
-      # Prevents container's node_modules from being overwritten by host's empty node_modules
+      # Prevents container's node_modules from being overwritten
       - /usr/src/app/node_modules
-    env_file:
-      - ./whatsapp-bot/.env
+    # DISABLED env_file because Dokploy will use the "environment" section below
+    # env_file:
+    #   - ./whatsapp-bot/.env
+    environment:
+      # These allow Dokploy to override values via its UI
+      - LARAVEL_URL=${LARAVEL_URL:-http://localhost:8000}
+      - WEBHOOK_TOKEN=${WEBHOOK_TOKEN:-aowkowkowkow}
+      - ALLOWED_GROUPS=${ALLOWED_GROUPS:-}
