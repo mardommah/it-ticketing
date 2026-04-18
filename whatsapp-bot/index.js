@@ -12,6 +12,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import express from 'express';
 import QRCode from 'qrcode';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -76,8 +77,8 @@ app.get('/scan', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`QR Scanner web interface running at http://localhost:${port}/scan`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`QR Scanner web interface running at http://0.0.0.0:${port}/scan`);
 });
 
 const logger = pino({ level: 'info' });
@@ -107,12 +108,24 @@ async function connectToWhatsApp() {
         }
         
         if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect.error instanceof Boom)
-                ? lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut
-                : true;
+            const statusCode = (lastDisconnect.error instanceof Boom)
+                ? lastDisconnect.error.output.statusCode
+                : null;
+            
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
             console.log('connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect);
+            
+            if (statusCode === DisconnectReason.loggedOut) {
+                console.log('Logged out from WhatsApp. Clearing session data...');
+                if (fs.existsSync('auth_info_baileys')) {
+                    fs.rmSync('auth_info_baileys', { recursive: true, force: true });
+                }
+            }
+
             if (shouldReconnect) {
                 connectToWhatsApp();
+            } else {
+                console.log('Bot stopped. Please restart to scan a new QR code.');
             }
         } else if (connection === 'open') {
             currentQR = null; // Clear QR once connected
