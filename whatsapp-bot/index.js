@@ -22,9 +22,10 @@ let currentQR = null;
 
 // Route to serve the QR code
 app.get('/scan', async (req, res) => {
-    const token = req.query.token;
-    if (token !== process.env.SCAN_TOKEN) {
-        return res.status(401).send('<h1>Unauthorized</h1><p>Please provide a valid scan token in the URL.</p>');
+    // Optional: Log who is accessing via Cloudflare
+    const cfUser = req.headers['cf-access-authenticated-user-email'];
+    if (cfUser) {
+        console.log(`Scan page accessed by Cloudflare User: ${cfUser}`);
     }
 
     if (!currentQR) {
