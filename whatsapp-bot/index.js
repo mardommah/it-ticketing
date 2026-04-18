@@ -25,13 +25,13 @@ app.get('/scan', async (req, res) => {
     // Optional: Log who is accessing via Cloudflare
     const cfUser = req.headers['cf-access-authenticated-user-email'];
     if (cfUser) {
-        console.log(`Scan page accessed by Cloudflare User: ${cfUser}`);
+        console.log(`ok`);
     }
 
     if (!currentQR) {
         return res.send('<h1>QR Code not generated yet or already connected.</h1><p>Check terminal logs for status.</p>');
     }
-    
+
     try {
         const qrImage = await QRCode.toDataURL(currentQR);
         res.send(`
@@ -107,15 +107,15 @@ async function connectToWhatsApp() {
             currentQR = qr;
             qrcode.generate(qr, { small: true });
         }
-        
+
         if (connection === 'close') {
             const statusCode = (lastDisconnect.error instanceof Boom)
                 ? lastDisconnect.error.output.statusCode
                 : null;
-            
+
             const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
             console.log('connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect);
-            
+
             if (statusCode === DisconnectReason.loggedOut) {
                 console.log('Logged out from WhatsApp. Clearing session data...');
                 if (fs.existsSync('auth_info_baileys')) {
