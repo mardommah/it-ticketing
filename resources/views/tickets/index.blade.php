@@ -20,6 +20,22 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="mb-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if($errors->any())
+        <div class="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 font-medium">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden transition-colors">
         <table class="min-w-full leading-normal">
             <thead>
@@ -75,6 +91,14 @@
                     <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                         <div class="flex space-x-3">
                             <a href="{{ route('tickets.show', $ticket) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-semibold transition-colors">View</a>
+                            
+                            <form action="{{ route('excluded-numbers.store') }}" method="POST" onsubmit="return confirm('Exclude this sender/group ({{ $ticket->from }}) from creating future tickets?')">
+                                @csrf
+                                <input type="hidden" name="number" value="{{ $ticket->from }}">
+                                <input type="hidden" name="note" value="Excluded from ticket list (Name: {{ $ticket->reporter_name }})">
+                                <button type="submit" class="text-orange-500 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-semibold transition-colors">Exclude</button>
+                            </form>
+
                             <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this ticket?')">
                                 @csrf
                                 @method('DELETE')
