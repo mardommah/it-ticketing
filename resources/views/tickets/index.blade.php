@@ -5,9 +5,15 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Ticket Recap List</h1>
         
-        <div class="flex items-center space-x-4">
-            <form action="{{ route('tickets.index') }}" method="GET" class="flex items-center">
-                <select name="group" onchange="this.form.submit()" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+        <div class="flex flex-wrap items-center gap-4">
+            <form action="{{ route('tickets.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+                    <span class="text-gray-500 dark:text-gray-400">to</span>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+                </div>
+                
+                <select name="group" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
                     <option value="">All Groups</option>
                     @foreach($uniqueGroups as $group)
                         <option value="{{ $group }}" {{ request('group') == $group ? 'selected' : '' }}>
@@ -15,6 +21,9 @@
                         </option>
                     @endforeach
                 </select>
+                
+                <button type="submit" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none transition-colors">Filter</button>
+                <a href="{{ route('tickets.index') }}" class="text-gray-700 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 transition-colors">Reset</a>
             </form>
             <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-1 rounded-lg">Total: {{ $tickets->total() }}</span>
         </div>
