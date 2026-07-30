@@ -5,9 +5,15 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Ticket Recap List</h1>
         
-        <div class="flex items-center space-x-4">
-            <form action="{{ route('tickets.index') }}" method="GET" class="flex items-center">
-                <select name="group" onchange="this.form.submit()" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+        <div class="flex flex-wrap items-center gap-4">
+            <form action="{{ route('tickets.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+                    <span class="text-gray-500 dark:text-gray-400">to</span>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+                </div>
+                
+                <select name="group" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
                     <option value="">All Groups</option>
                     @foreach($uniqueGroups as $group)
                         <option value="{{ $group }}" {{ request('group') == $group ? 'selected' : '' }}>
@@ -15,10 +21,29 @@
                         </option>
                     @endforeach
                 </select>
+                
+                <button type="submit" class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none transition-colors">Filter</button>
+                <a href="{{ route('tickets.index') }}" class="text-gray-700 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 transition-colors">Reset</a>
             </form>
             <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-1 rounded-lg">Total: {{ $tickets->total() }}</span>
         </div>
     </div>
+
+    @if(session('success'))
+        <div class="mb-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if($errors->any())
+        <div class="mb-4 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 font-medium">
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden transition-colors">
         <table class="min-w-full leading-normal">
@@ -75,6 +100,14 @@
                     <td class="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                         <div class="flex space-x-3">
                             <a href="{{ route('tickets.show', $ticket) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-semibold transition-colors">View</a>
+                            
+                            <form action="{{ route('excluded-numbers.store') }}" method="POST" onsubmit="return confirm('Exclude this sender/group ({{ $ticket->from }}) from creating future tickets?')">
+                                @csrf
+                                <input type="hidden" name="number" value="{{ $ticket->from }}">
+                                <input type="hidden" name="note" value="Excluded from ticket list (Name: {{ $ticket->reporter_name }})">
+                                <button type="submit" class="text-orange-500 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-semibold transition-colors">Exclude</button>
+                            </form>
+
                             <form action="{{ route('tickets.destroy', $ticket) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this ticket?')">
                                 @csrf
                                 @method('DELETE')

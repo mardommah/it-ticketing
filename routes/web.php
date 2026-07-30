@@ -16,4 +16,5 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [TicketController::class, 'dashboard'])->name('dashboard');
     Route::resource('tickets', TicketController::class);
+    Route::resource('excluded-numbers', \App\Http\Controllers\ExcludedNumberController::class)->except(['create', 'show', 'edit', 'update']);
 });

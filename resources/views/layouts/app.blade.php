@@ -18,6 +18,7 @@
                 <div class="hidden md:flex space-x-6">
                     <a href="{{ route('dashboard') }}" class="text-sm font-semibold {{ request()->routeIs('dashboard') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }} transition-colors">Dashboard</a>
                     <a href="{{ route('tickets.index') }}" class="text-sm font-semibold {{ request()->routeIs('tickets.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }} transition-colors">Tickets</a>
+                    <a href="{{ route('excluded-numbers.index') }}" class="text-sm font-semibold {{ request()->routeIs('excluded-numbers.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white' }} transition-colors">Excluded</a>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -61,6 +62,7 @@
              style="display: none;">
             <a href="{{ route('dashboard') }}" class="block text-base font-semibold {{ request()->routeIs('dashboard') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600' }}">Dashboard</a>
             <a href="{{ route('tickets.index') }}" class="block text-base font-semibold {{ request()->routeIs('tickets.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600' }}">Tickets</a>
+            <a href="{{ route('excluded-numbers.index') }}" class="block text-base font-semibold {{ request()->routeIs('excluded-numbers.*') ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300 hover:text-indigo-600' }}">Excluded</a>
         </div>
     </nav>
     @endauth

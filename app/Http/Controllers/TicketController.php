@@ -96,6 +96,14 @@ class TicketController extends Controller
             $query->where('from', $request->group);
         }
 
+        if ($request->has('start_date') && $request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date') && $request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
         $tickets = $query->paginate(10)->withQueryString();
         $uniqueGroups = Ticket::distinct()->pluck('from');
 
