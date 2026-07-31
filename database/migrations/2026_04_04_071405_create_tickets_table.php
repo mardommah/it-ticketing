@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('reporter_name');
             $table->text('message');
             $table->string('status')->default('open');
-            $table->unsignedBigInteger('assigned_to')->nullable();
+            $table->uuid('assigned_to')->nullable();
             $table->string('category')->nullable();
             $table->bigInteger('whatsapp_timestamp');
             $table->timestamps();

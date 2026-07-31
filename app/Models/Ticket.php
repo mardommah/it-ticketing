@@ -14,10 +14,15 @@ class Ticket extends Model
         'participant',
         'reporter_name',
         'message',
+        'attachments',
         'status',
         'assigned_to',
         'category',
         'whatsapp_timestamp',
+    ];
+
+    protected $casts = [
+        'attachments' => 'array',
     ];
     public function assignee()
     {

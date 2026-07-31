@@ -74,6 +74,49 @@
                     "{{ $ticket->message }}"
                 </div>
             </div>
+
+            @if($ticket->attachments && count($ticket->attachments) > 0)
+            <div class="mt-8">
+                <h2 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">Attachments</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    @foreach($ticket->attachments as $attachment)
+                    <a href="{{ Storage::url($attachment['path']) }}" target="_blank" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <div class="flex-shrink-0">
+                            @if(str_contains($attachment['mime'], 'image'))
+                            <svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                            </svg>
+                            @else
+                            <svg class="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                            </svg>
+                            @endif
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ $attachment['name'] }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ round($attachment['size'] / 1024, 1) }} KB</p>
+                        </div>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <div class="mt-6">
+                <h2 class="text-sm font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">Add Attachments</h2>
+                <form action="{{ route('tickets.update', $ticket) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="{{ $ticket->status }}">
+                    <input type="hidden" name="assigned_to" value="{{ $ticket->assigned_to }}">
+                    <input type="hidden" name="category" value="{{ $ticket->category }}">
+                    <div class="mb-4">
+                        <input name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" class="block w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:uppercase file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Allowed: JPG, PNG, PDF, DOC, DOCX (Max 5MB each)</p>
+                    </div>
+                    <button type="submit" class="text-white bg-indigo-600 hover:bg-indigo-700 font-medium rounded-lg text-sm px-4 py-2 transition-colors">Upload</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
