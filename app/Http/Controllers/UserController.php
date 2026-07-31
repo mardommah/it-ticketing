@@ -14,6 +14,7 @@ class UserController extends Controller
     public function index(): View
     {
         $users = User::latest()->paginate(10);
+
         return view('users.index', compact('users'));
     }
 
@@ -49,8 +50,8 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:50', 'unique:users,username,' . $user->id],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username,'.$user->id],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'password' => ['nullable', 'string', 'min:6'],
             'role' => ['required', 'in:user,admin'],
             'is_active' => ['boolean'],
@@ -88,8 +89,8 @@ class UserController extends Controller
         return Response::stream(function () {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
-            fputcsv($out, ['name', 'username', 'email', 'role', 'is_active']);
-            fputcsv($out, ['Contoh Nama', 'contoh_user', 'contoh@email.com', 'user', '1']);
+            fputcsv($out, ['name', 'username', 'email', 'password', 'role', 'is_active']);
+            fputcsv($out, ['Contoh Nama', 'contoh_user', 'contoh@email.com', 'password123', 'user', '1']);
             fclose($out);
         }, 200, $headers);
     }
@@ -107,9 +108,9 @@ class UserController extends Controller
         );
 
         $hasHeader = in_array('username', $header, true) || in_array('name', $header, true);
-        if (!$hasHeader) {
+        if (! $hasHeader) {
             rewind($handle);
-            $header = ['name', 'username', 'email', 'role', 'is_active'];
+            $header = ['name', 'username', 'email', 'password', 'role', 'is_active'];
         }
 
         $created = 0;
@@ -128,22 +129,31 @@ class UserController extends Controller
             $name = trim((string) ($data['name'] ?? ''));
             $username = trim((string) ($data['username'] ?? ''));
             $email = trim((string) ($data['email'] ?? ''));
+            $password = (string) ($data['password'] ?? '');
             $role = strtolower(trim((string) ($data['role'] ?? ''))) ?: 'user';
             $isActiveRaw = strtolower(trim((string) ($data['is_active'] ?? '1')));
-            $isActive = !in_array($isActiveRaw, ['0', 'false', 'no', 'tidak', 'nonaktif', 'non-aktif'], true);
+            $isActive = ! in_array($isActiveRaw, ['0', 'false', 'no', 'tidak', 'nonaktif', 'non-aktif'], true);
 
             $validator = Validator::make(
-                ['name' => $name, 'username' => $username, 'email' => $email, 'role' => $role],
+                [
+                    'name' => $name,
+                    'username' => $username,
+                    'email' => $email,
+                    'password' => $password,
+                    'role' => $role,
+                ],
                 [
                     'name' => ['required', 'string', 'max:255'],
                     'username' => ['required', 'string', 'max:50', 'unique:users,username'],
                     'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                    'password' => ['required', 'string', 'min:6'],
                     'role' => ['required', 'in:user,admin'],
                 ]
             );
 
             if ($validator->fails()) {
-                $errors[] = "Baris {$rowNum}: " . implode(', ', $validator->errors()->all());
+                $errors[] = "Baris {$rowNum}: ".implode(', ', $validator->errors()->all());
+
                 continue;
             }
 
@@ -151,7 +161,7 @@ class UserController extends Controller
                 'name' => $name,
                 'username' => $username,
                 'email' => $email,
-                'password' => $username,
+                'password' => $password,
                 'role' => $role,
                 'is_active' => $isActive,
             ]);
@@ -162,7 +172,7 @@ class UserController extends Controller
         fclose($handle);
 
         return redirect()->route('users.index')
-            ->with($created > 0 ? 'success' : 'error', "{$created} user berhasil diimport." . ($errors ? ' ' . count($errors) . ' baris gagal.' : ''))
+            ->with($created > 0 ? 'success' : 'error', "{$created} user berhasil diimport.".($errors ? ' '.count($errors).' baris gagal.' : ''))
             ->with('import_errors', $errors);
     }
 }

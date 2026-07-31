@@ -116,7 +116,7 @@
                     @csrf
                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">Import User via CSV</h2>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                        Kolom CSV: <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">name, username, email, role, is_active</code>. Password otomatis = username.
+                        Kolom CSV: <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">name, username, email, password, role, is_active</code>. Password minimal 6 karakter.
                         <a href="{{ route('users.import-template') }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">Download template</a>.
                     </p>
                     <div class="mb-4">
