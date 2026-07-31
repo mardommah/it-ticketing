@@ -6,6 +6,9 @@
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Ticket Recap List</h1>
         
         <div class="flex flex-wrap items-center gap-4">
+            <a href="{{ route('tickets.create') }}" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-green-500 dark:hover:bg-green-600 focus:outline-none transition-colors">
+                + Create Ticket
+            </a>
             <form action="{{ route('tickets.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center gap-2">
                     <input type="date" name="start_date" value="{{ request('start_date') }}" class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">

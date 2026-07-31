@@ -110,6 +110,53 @@ class TicketController extends Controller
         return view('tickets.index', compact('tickets', 'uniqueGroups'));
     }
 
+    public function create()
+    {
+        $users = User::all();
+        return view('tickets.create', compact('users'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'reporter_name' => 'required|string|max:255',
+            'from' => 'required|string|max:255',
+            'message' => 'required|string',
+            'category' => 'nullable|string|max:255',
+            'assigned_to' => 'nullable|exists:users,id',
+            'status' => 'required|in:open,pending,resolved',
+            'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+        ]);
+
+        $attachments = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments', 'public');
+                $attachments[] = [
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                ];
+            }
+        }
+
+        $ticket = Ticket::create([
+            'whatsapp_id' => 'manual-' . uniqid(),
+            'from' => $validated['from'],
+            'participant' => $validated['from'],
+            'reporter_name' => $validated['reporter_name'],
+            'message' => $validated['message'],
+            'category' => $validated['category'] ?? null,
+            'assigned_to' => $validated['assigned_to'] ?? null,
+            'status' => $validated['status'],
+            'attachments' => $attachments,
+            'whatsapp_timestamp' => now()->timestamp,
+        ]);
+
+        return redirect()->route('tickets.show', $ticket)->with('success', 'Ticket created successfully.');
+    }
+
     public function show(Ticket $ticket)
     {
         $users = User::all();
@@ -122,12 +169,29 @@ class TicketController extends Controller
             'status' => 'required|in:open,pending,resolved',
             'assigned_to' => 'nullable|exists:users,id',
             'category' => 'nullable|string',
+            'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
         ]);
 
         $oldStatus = $ticket->status;
         $oldAssignedTo = $ticket->assigned_to;
 
-        $ticket->update($request->only(['status', 'assigned_to', 'category']));
+        $updateData = $request->only(['status', 'assigned_to', 'category']);
+
+        if ($request->hasFile('attachments')) {
+            $existingAttachments = $ticket->attachments ?? [];
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('attachments', 'public');
+                $existingAttachments[] = [
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                ];
+            }
+            $updateData['attachments'] = $existingAttachments;
+        }
+
+        $ticket->update($updateData);
 
         // Record Logs
         if ($oldStatus !== $ticket->status) {

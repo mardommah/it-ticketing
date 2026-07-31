@@ -4,7 +4,7 @@
 <div class="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <div class="max-w-md w-full bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl transition-colors">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Admin Login</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">User Login</h1>
             <p class="text-gray-500 dark:text-gray-400 mt-2">Enter your credentials to access the dashboard</p>
         </div>
 
