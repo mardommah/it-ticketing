@@ -45,7 +45,7 @@ setup:
 
 deploy:
 	@echo "🚀 Deploying to production..."
-	php artisan down --message="Updating..." --retry=60
+	php artisan down --retry=60
 	git pull origin main
 	composer install --no-dev --optimize-autoloader --no-interaction
 	npm ci --production
@@ -60,7 +60,7 @@ deploy:
 
 update:
 	@echo "📦 Updating application..."
-	php artisan down --message="Updating..." --retry=60
+	php artisan down --retry=60
 	git pull origin main
 	composer install --no-dev --optimize-autoloader --no-interaction
 	php artisan migrate --force
